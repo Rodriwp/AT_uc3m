@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
 		if (!fork()) { // this is the child process
 			close(sockfd); // child doesn't need the listener
 	
-			TCPechod(new_fd);
+                        UDPechod(new_fd);
 			close(new_fd);
 			exit(0);
 		}
