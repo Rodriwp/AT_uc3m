@@ -18,7 +18,7 @@
 #define MAXDATASIZE 100 // max number of bytes we can get at once 
 #define LINELEN         1500
 
-int TCPecho(int fd);
+int UDPecho(int fd);
 void *get_in_addr(struct sockaddr *sa);
 
 
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
+        hints.ai_socktype = SOCK_DGRAM;
 
 	if ((rv = getaddrinfo(host, port, &hints, &servinfo)) != 0) {
 		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
@@ -74,13 +74,14 @@ int main(int argc, char *argv[])
 		return 2;
 	}
 
+        //Just for printing
 	inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr),
 			s, sizeof s);
 	//printf("client: connecting to %s\n", s);
 
 	freeaddrinfo(servinfo); // all done with this structure
 
-	TCPecho(sockfd);
+        UDPecho(sockfd);
       exit(0);
 }
 
@@ -88,7 +89,7 @@ int main(int argc, char *argv[])
  * TCPecho - send input to ECHO service on specified host and print reply
  *------------------------------------------------------------------------
  */
-int TCPecho(int fd)
+int UDPecho(int fd)
 {
         char    buf[LINELEN+1];         /* buffer for one line of text  */
         int     n;                   	/* read count*/
