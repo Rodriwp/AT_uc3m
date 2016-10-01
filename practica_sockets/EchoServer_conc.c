@@ -16,8 +16,6 @@
 #include <sys/wait.h>
 #include <signal.h>
 
-#define BACKLOG 10	 // how many pending connections queue will hold
-
 #define BUFSIZE         4096
 
 
@@ -26,13 +24,10 @@ int UDPechod(int fd);
 
 int main(int argc, char *argv[])
 {
-	int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
+        int sockfd;// listen on sock_fd
 	struct addrinfo hints, *servinfo, *p;
-	struct sockaddr_storage their_addr; // connector's address information
-	socklen_t sin_size;
 	struct sigaction sa;
 	int yes=1;
-	char s[INET6_ADDRSTRLEN];
 	int rv;
 
 	char* port;
@@ -97,25 +92,12 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	//printf("server: waiting for connections...\n");
+        printf("server: running...\n");
 
-	while(1) {  // main accept() loop
-		sin_size = sizeof their_addr;
-		new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
-		if (new_fd == -1) {
-			perror("accept");
-			continue;
-                }
-
-		if (!fork()) { // this is the child process
-			close(sockfd); // child doesn't need the listener
-                        UDPechod(new_fd);
-			close(new_fd);
-			exit(0);
-		}
-		close(new_fd);  // parent doesn't need this
+        while(1) {
+            UDPechod(sockfd);
 	}
-
+        close(sockfd);
 	return 0;
 }
 
