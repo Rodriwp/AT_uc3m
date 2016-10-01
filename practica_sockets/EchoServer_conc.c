@@ -22,7 +22,6 @@
 
 
 void sigchld_handler(int s);
-void *get_in_addr(struct sockaddr *sa);
 int UDPechod(int fd);
 
 int main(int argc, char *argv[])
@@ -106,18 +105,11 @@ int main(int argc, char *argv[])
 		if (new_fd == -1) {
 			perror("accept");
 			continue;
-		}
-
-                // just for printing
-		inet_ntop(their_addr.ss_family,
-			get_in_addr((struct sockaddr *)&their_addr),
-			s, sizeof s);
-                //printf("server: got connection from %s\n", s);
+                }
 
 		if (!fork()) { // this is the child process
 			close(sockfd); // child doesn't need the listener
-	
-                        UDPargechod(new_fd);
+                        UDPechod(new_fd);
 			close(new_fd);
 			exit(0);
 		}
@@ -134,19 +126,6 @@ int main(int argc, char *argv[])
 void sigchld_handler(int s)
 {
 	while(waitpid(-1, NULL, WNOHANG) > 0);
-}
-
-/*------------------------------------------------------------------------
- * get_in_addr - get sockaddr, IPv4 or IPv6
- *------------------------------------------------------------------------
- */
-void *get_in_addr(struct sockaddr *sa)
-{
-	if (sa->sa_family == AF_INET) {
-		return &(((struct sockaddr_in*)sa)->sin_addr);
-	}
-
-	return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
 /*------------------------------------------------------------------------

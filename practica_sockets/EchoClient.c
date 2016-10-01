@@ -19,8 +19,6 @@
 #define LINELEN         1500
 
 int UDPecho(int fd);
-void *get_in_addr(struct sockaddr *sa);
-
 
 int main(int argc, char *argv[])
 {
@@ -73,12 +71,6 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "client: failed to connect\n");
 		return 2;
 	}
-
-        //Just for printing
-	inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr),
-			s, sizeof s);
-	//printf("client: connecting to %s\n", s);
-
 	freeaddrinfo(servinfo); // all done with this structure
 
         UDPecho(sockfd);
@@ -111,15 +103,5 @@ int UDPecho(int fd)
         }
         close(fd);
 
-}
-
-// get sockaddr, IPv4 or IPv6:
-void *get_in_addr(struct sockaddr *sa)
-{
-	if (sa->sa_family == AF_INET) {
-		return &(((struct sockaddr_in*)sa)->sin_addr);
-	}
-
-	return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
